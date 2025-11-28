@@ -1,0 +1,22 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/api/questionnaire/(.*)",
+      "destination": "https://myrtlesurveybe-production.up.railway.app/api/questionnaire/$1"
+    },
+    {
+      "source": "/api/admin/(.*)",
+      "destination": "https://myrtlesurveybe-production.up.railway.app/api/admin/$1"
+    }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    {
+      "src": "/api/(.*)",
+      "status": 404,
+      "dest": "/404"
+    }
+  ]
+}
+

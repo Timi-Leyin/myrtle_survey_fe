@@ -1,17 +1,18 @@
-const rawApiBaseUrl = import.meta.env.VITE_API_URL?.trim();
+const sanitizeUrl = (url: string) => url.replace(/\/+$/, "");
+
+const rawApiBaseUrl =
+  import.meta.env.VITE_API_URL ||
+  "https://myrtlesurveybe-production.up.railway.app";
 
 if (!rawApiBaseUrl) {
-  throw new Error(
-    "Missing VITE_API_URL environment variable. Please define it in your .env file."
+  console.warn(
+    "[config/env] VITE_API_URL is not defined. Falling back to window.location.origin (or http://localhost:3000 in SSR). " +
+      "Please create a .env file and set VITE_API_URL to your backend host."
   );
 }
 
-const sanitizeUrl = (url: string) => url.replace(/\/+$/, "");
-
 export const API_BASE_URL = sanitizeUrl(rawApiBaseUrl);
 
-export const API_DOCS_URL = sanitizeUrl(
-  import.meta.env.VITE_API_DOCS_URL?.trim() || `${API_BASE_URL}/docs`
-);
+const rawDocsUrl = import.meta.env.VITE_API_DOCS_URL?.trim();
 
-
+export const API_DOCS_URL = sanitizeUrl(rawDocsUrl || `${API_BASE_URL}/docs`);
