@@ -31,9 +31,6 @@ export const Completion = ({
 
   const mounted = useRef(false);
 
-  const { toPDF, targetRef } = usePDF({
-    filename: `myrtle-blueprint-${userInfo.fullName.replace(/\s+/g, "-")}.pdf`,
-  });
 
   const handleSubmit = async () => {
     if (isSubmitted || isSubmitting || hasSubmittedRef.current) return;
@@ -188,25 +185,6 @@ export const Completion = ({
     URL.revokeObjectURL(url);
   };
 
-  const downloadPDF = async () => {
-    const toastId = toast.loading("Generating PDF...", {
-      description: "Please wait while we create your blueprint.",
-    });
-
-    try {
-      await toPDF();
-      toast.success("Blueprint downloaded", {
-        description: "Your personalized PDF has been generated.",
-      });
-    } catch (error) {
-      toast.error("Unable to generate PDF", {
-        description:
-          error instanceof Error ? error.message : "Please try again shortly.",
-      });
-    } finally {
-      toast.dismiss(toastId);
-    }
-  };
 
   const getAnswerLabel = (questionId: string, answerValue: string) => {
     const question = QUESTIONS.find((q) => q.id === questionId);
