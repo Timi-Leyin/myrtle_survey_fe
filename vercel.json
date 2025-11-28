@@ -10,12 +10,11 @@
       "destination": "https://myrtlesurveybe-production.up.railway.app/api/admin/$1"
     }
   ],
-  "routes": [
-    { "handle": "filesystem" },
+  "redirects": [
     {
-      "src": "/api/(.*)",
-      "status": 404,
-      "dest": "/404"
+      "source": "/api/(.*)",
+      "destination": "/404",
+      "statusCode": 404
     }
   ]
 }
