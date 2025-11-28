@@ -208,7 +208,6 @@ export const Completion = ({
   return (
     <div
       className="space-y-8 px-4 no-oklch"
-      ref={targetRef}
       style={{ colorScheme: "light" }}
     >
       {/* Thank You Message */}
