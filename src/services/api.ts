@@ -26,9 +26,10 @@ export interface QuestionnaireAnalysis {
   riskProfile: string;
   persona: string;
   portfolio: {
-    cash: number;
-    income: number;
-    growth: number;
+    custom?: boolean;
+    cash?: number;
+    income?: number;
+    growth?: number;
   };
   narrative: string;
 }

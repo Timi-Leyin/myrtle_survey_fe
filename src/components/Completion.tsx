@@ -1,9 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import confetti from "canvas-confetti";
+import { usePDF } from "react-to-pdf";
 import { toast } from "sonner";
-import { QUESTIONS } from "../data/questions";
+import { QUESTIONS, SECTIONS } from "../data/questions";
 import type { UserInfo, QuestionnaireAnswers } from "../hooks/useQuestionnaire";
-import { submitSurvey } from "../services/api";
+import {
+  submitSurvey,
+  type QuestionnaireAnalysis,
+  type QuestionnaireSubmissionResponse,
+} from "../services/api";
 import { API_DOCS_URL } from "../config/env";
 
 interface CompletionProps {
@@ -20,6 +25,16 @@ export const Completion = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const hasSubmittedRef = useRef(false);
+  const [analysis, setAnalysis] = useState<QuestionnaireAnalysis | null>(null);
+  const [submissionMeta, setSubmissionMeta] = useState<
+    QuestionnaireSubmissionResponse["submission"] | null
+  >(null);
+
+  const mounted = useRef(false);
+
+  const { toPDF, targetRef } = usePDF({
+    filename: `myrtle-blueprint-${userInfo.fullName.replace(/\s+/g, "-")}.pdf`,
+  });
 
   const handleSubmit = async () => {
     if (isSubmitted || isSubmitting || hasSubmittedRef.current) return;
@@ -43,6 +58,16 @@ export const Completion = ({
     toast.dismiss(loadingToast);
 
     if (result.success) {
+      const responseData =
+        (result.data as QuestionnaireSubmissionResponse) ||
+        ((result.data as { data?: QuestionnaireSubmissionResponse })?.data ??
+          null);
+
+      if (responseData) {
+        setAnalysis(responseData.analysis);
+        setSubmissionMeta(responseData.submission);
+      }
+
       setIsSubmitted(true);
       toast.success("Survey Submitted!", {
         description:
@@ -83,11 +108,10 @@ export const Completion = ({
   };
 
   useEffect(() => {
-    // Auto-submit on mount - only once
-    if (!hasSubmittedRef.current) {
+    if (!mounted.current) {
+      mounted.current = true;
       handleSubmit();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -146,6 +170,8 @@ export const Completion = ({
     const finalResponse = {
       user: userInfo,
       questionnaire: answers,
+      analysis,
+      submission: submissionMeta,
     };
 
     const dataStr = JSON.stringify(finalResponse, null, 2);
@@ -163,6 +189,26 @@ export const Completion = ({
     URL.revokeObjectURL(url);
   };
 
+  const downloadPDF = async () => {
+    const toastId = toast.loading("Generating PDF...", {
+      description: "Please wait while we create your blueprint.",
+    });
+
+    try {
+      await toPDF();
+      toast.success("Blueprint downloaded", {
+        description: "Your personalized PDF has been generated.",
+      });
+    } catch (error) {
+      toast.error("Unable to generate PDF", {
+        description:
+          error instanceof Error ? error.message : "Please try again shortly.",
+      });
+    } finally {
+      toast.dismiss(toastId);
+    }
+  };
+
   const getAnswerLabel = (questionId: string, answerValue: string) => {
     const question = QUESTIONS.find((q) => q.id === questionId);
     if (!question) return answerValue;
@@ -177,8 +223,17 @@ export const Completion = ({
     return option?.label || answerValue;
   };
 
+  const formatCurrency = (value?: number) => {
+    if (value === undefined || value === null) return "—";
+    return `₦${value.toLocaleString()}`;
+  };
+
   return (
-    <div className="space-y-8 px-4">
+    <div
+      className="space-y-8 px-4 no-oklch"
+      ref={targetRef}
+      style={{ colorScheme: "light" }}
+    >
       {/* Thank You Message */}
       <div className="text-center space-y-4">
         <div className="w-20 h-20 bg-[#27DC85] rounded-full flex items-center justify-center mx-auto shadow-lg">
@@ -242,6 +297,93 @@ export const Completion = ({
         )}
       </div>
 
+      {analysis && (
+        <section className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-white rounded-2xl shadow-xl p-6 sm:p-8 space-y-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div>
+              <p className="text-sm uppercase tracking-[0.3em] text-emerald-300">
+                Myrtle Wealth Blueprint
+              </p>
+              <h2 className="text-3xl sm:text-4xl font-semibold mt-2">
+                {analysis.persona}
+              </h2>
+              <p className="text-slate-300 mt-2 text-base max-w-2xl">
+                Your personalized profile highlights how Myrtle can guide you
+                toward a confident, structured wealth strategy tailored to your
+                ambitions.
+              </p>
+            </div>
+            {submissionMeta && (
+              <div className="bg-white/10 border border-white/10 rounded-xl px-5 py-4 space-y-2 w-full lg:w-80">
+                <p className="text-sm text-slate-300">Reference ID</p>
+                <p className="text-base font-semibold tracking-wide">
+                  {submissionMeta.id}
+                </p>
+                <p className="text-sm text-slate-300">
+                  Submitted on{" "}
+                  <span className="text-white font-medium">
+                    {new Date(submissionMeta.createdAt).toLocaleString()}
+                  </span>
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="rounded-2xl bg-white/5 border border-white/10 p-5 backdrop-blur">
+              <p className="text-sm text-slate-300 mb-1">Net Worth</p>
+              <h3 className="text-3xl font-semibold text-emerald-300">
+                {formatCurrency(analysis.netWorth)}
+              </h3>
+              <p className="text-sm text-slate-400 mt-1">
+                Band: {analysis.netWorthBand}
+              </p>
+            </div>
+            <div className="rounded-2xl bg-white/5 border border-white/10 p-5 backdrop-blur">
+              <p className="text-sm text-slate-300 mb-1">Risk Profile</p>
+              <h3 className="text-3xl font-semibold text-white">
+                {analysis.riskProfile}
+              </h3>
+              <p className="text-sm text-slate-400 mt-1">
+                Score: {analysis.riskScore}/28
+              </p>
+            </div>
+            <div className="rounded-2xl bg-white/5 border border-white/10 p-5 backdrop-blur">
+              <p className="text-sm text-slate-300 mb-1">Portfolio Outlook</p>
+              <h3 className="text-3xl font-semibold text-white">
+                {analysis.portfolio?.custom
+                  ? "Custom Allocation"
+                  : "Guided Mix"}
+              </h3>
+              {!analysis.portfolio?.custom && (
+                <div className="flex gap-3 text-sm text-slate-300 mt-2">
+                  {analysis.portfolio?.cash !== undefined && (
+                    <span>Cash {analysis.portfolio.cash}%</span>
+                  )}
+                  {analysis.portfolio?.income !== undefined && (
+                    <span>Income {analysis.portfolio.income}%</span>
+                  )}
+                  {analysis.portfolio?.growth !== undefined && (
+                    <span>Growth {analysis.portfolio.growth}%</span>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {analysis.narrative && (
+            <div className="bg-white text-slate-900 rounded-2xl p-6 space-y-4 shadow-lg">
+              <p className="text-sm font-semibold text-emerald-600 uppercase tracking-widest">
+                Personalized Narrative
+              </p>
+              <p className="text-base leading-relaxed whitespace-pre-line">
+                {analysis.narrative}
+              </p>
+            </div>
+          )}
+        </section>
+      )}
+
       {/* Summary */}
       <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 space-y-6">
         <h2 className="text-2xl font-semibold text-slate-900 mb-6">
@@ -301,30 +443,61 @@ export const Completion = ({
         </div>
       </div>
 
-      {/* Questionnaire Answers */}
-      <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 space-y-6">
+      {/* Questionnaire Answers - Grouped by Sections */}
+      <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 space-y-8">
         <h2 className="text-2xl font-semibold text-slate-900 mb-6">
           Your Responses
         </h2>
-        <div className="space-y-4">
-          {QUESTIONS.map((question) => (
-            <div
-              key={question.id}
-              className="border-b border-slate-200 pb-4 last:border-b-0 last:pb-0"
-            >
-              <p className="text-sm font-medium text-slate-500 mb-2">
-                {question.id} - {question.dimension}
-              </p>
-              <p className="text-base text-slate-900">
-                {getAnswerLabel(question.id, answers[question.id] || "")}
-              </p>
+        {SECTIONS.map((section) => {
+          const sectionQuestions = QUESTIONS.filter(
+            (q) => q.sectionNumber === section.number
+          );
+          if (sectionQuestions.length === 0) return null;
+
+          return (
+            <div key={section.id} className="space-y-4">
+              <div className="border-b-2 border-[#27DC85] pb-2 mb-4">
+                <h3 className="text-lg font-semibold text-slate-900">
+                  {section.title}
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  {section.description}
+                </p>
+              </div>
+              <div className="space-y-4 pl-4">
+                {sectionQuestions.map((question) => {
+                  const answer = answers[question.id];
+                  if (!answer) return null;
+
+                  return (
+                    <div
+                      key={question.id}
+                      className="border-l-2 border-slate-200 pl-4 pb-4 last:pb-0"
+                    >
+                      <p className="text-sm font-semibold text-slate-700 mb-1">
+                        {question.id}. {question.dimension}
+                      </p>
+                      <p className="text-base text-slate-900">
+                        {getAnswerLabel(question.id, answer)}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
 
       {/* Actions */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* <button
+          onClick={downloadPDF}
+          className="flex-1 bg-slate-900 text-white font-semibold py-3 px-6 text-base rounded-xl shadow-md hover:shadow-lg transition-all hover:opacity-90"
+        >
+          Download Blueprint (PDF)
+        </button> */}
+
         <button
           onClick={downloadJSON}
           className="flex-1 bg-[#27DC85] text-white font-semibold py-3 px-6 text-base rounded-xl shadow-md hover:shadow-lg transition-all hover:opacity-90"

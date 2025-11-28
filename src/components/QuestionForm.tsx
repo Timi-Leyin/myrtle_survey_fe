@@ -1,4 +1,4 @@
-import { QUESTIONS } from "../data/questions";
+import { QUESTIONS, SECTIONS } from "../data/questions";
 
 interface QuestionFormProps {
   currentQuestionIndex: number;
@@ -26,9 +26,26 @@ export const QuestionForm = ({
   const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
   const isQ15 = question.id === "Q15";
   const isOtherSelected = isQ15 && selectedAnswer === "other";
+  
+  // Get current section info
+  const currentSection = SECTIONS.find((s) => s.number === question.sectionNumber);
+  const sectionQuestions = QUESTIONS.filter((q) => q.sectionNumber === question.sectionNumber);
+  const questionInSection = sectionQuestions.findIndex((q) => q.id === question.id) + 1;
 
   return (
     <div className="space-y-6">
+      {/* Section Header */}
+      {currentSection && (
+        <div className="mb-4 pb-4 border-b border-slate-200">
+          <p className="text-sm font-semibold text-[#27DC85] uppercase tracking-wide mb-1">
+            {currentSection.title}
+          </p>
+          <p className="text-xs text-slate-500">
+            Question {questionInSection} of {sectionQuestions.length} in this section
+          </p>
+        </div>
+      )}
+
       {/* Progress Bar */}
       <div>
         <div className="flex justify-between items-center mb-2">

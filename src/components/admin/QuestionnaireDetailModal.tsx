@@ -8,7 +8,7 @@ import {
 } from "../ui/sheet";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
-import { QUESTIONS } from "../../data/questions";
+import { QUESTIONS, SECTIONS } from "../../data/questions";
 import type { Submission } from "../../services/adminApi";
 
 interface QuestionnaireDetailModalProps {
@@ -260,7 +260,7 @@ export const QuestionnaireDetailModal = ({
             </Card>
           )}
 
-          {/* Questionnaire Answers */}
+          {/* Questionnaire Answers - Grouped by Sections */}
           {submission.answers && (
             <Card>
               <CardHeader>
@@ -269,33 +269,57 @@ export const QuestionnaireDetailModal = ({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {QUESTIONS.map((question) => {
-                    const answer = submission.answers?.[question.id];
-                    if (!answer) return null;
+                <div className="space-y-6">
+                  {SECTIONS.map((section) => {
+                    const sectionQuestions = QUESTIONS.filter(
+                      (q) => q.sectionNumber === section.number
+                    );
+                    if (sectionQuestions.length === 0) return null;
 
                     return (
-                      <div
-                        key={question.id}
-                        className="border-b border-slate-100 pb-4 last:border-b-0 last:pb-0"
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#27DC85]/10 flex items-center justify-center">
-                            <span className="text-xs font-semibold text-[#27DC85]">
-                              {question.id}
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-slate-900 mb-1">
-                              {question.dimension}
-                            </p>
-                            <p className="text-sm text-slate-700">
-                              {getAnswerLabel(question.id, answer)}
-                            </p>
-                          </div>
-                          <Badge variant="outline" className="flex-shrink-0">
-                            {answer}
-                          </Badge>
+                      <div key={section.id} className="space-y-3">
+                        <div className="border-b-2 border-[#27DC85] pb-2">
+                          <h4 className="text-base font-semibold text-slate-900">
+                            {section.title}
+                          </h4>
+                          <p className="text-xs text-slate-500 mt-1">
+                            {section.description}
+                          </p>
+                        </div>
+                        <div className="space-y-3 pl-4">
+                          {sectionQuestions.map((question) => {
+                            const answer = submission.answers?.[question.id];
+                            if (!answer) return null;
+
+                            return (
+                              <div
+                                key={question.id}
+                                className="border-l-2 border-slate-200 pl-4 pb-3"
+                              >
+                                <div className="flex items-start gap-3">
+                                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#27DC85]/10 flex items-center justify-center">
+                                    <span className="text-xs font-semibold text-[#27DC85]">
+                                      {question.id}
+                                    </span>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-semibold text-slate-900 mb-1">
+                                      {question.dimension}
+                                    </p>
+                                    <p className="text-sm text-slate-700">
+                                      {getAnswerLabel(question.id, answer)}
+                                    </p>
+                                  </div>
+                                  <Badge
+                                    variant="outline"
+                                    className="flex-shrink-0"
+                                  >
+                                    {answer}
+                                  </Badge>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     );
