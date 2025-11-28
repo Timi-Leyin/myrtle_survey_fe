@@ -2,19 +2,16 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "source": "/api/questionnaire/(.*)",
-      "destination": "https://myrtlesurveybe-production.up.railway.app/api/questionnaire/$1"
+      "source": "/",
+      "destination": "https://myrtle-survey-fe.vercel.app/"
     },
     {
-      "source": "/api/admin/(.*)",
-      "destination": "https://myrtlesurveybe-production.up.railway.app/api/admin/$1"
-    }
-  ],
-  "redirects": [
+      "source": "/admin/login",
+      "destination": "https://myrtle-survey-fe.vercel.app/admin/login"
+    },
     {
-      "source": "/api/(.*)",
-      "destination": "/404",
-      "statusCode": 404
+      "source": "/admin/dashboard",
+      "destination": "https://myrtle-survey-fe.vercel.app/admin/dashboard"
     }
   ]
 }
