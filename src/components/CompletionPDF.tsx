@@ -127,8 +127,8 @@ const getAnswerLabel = (
   const question = questions.find((q) => q.id === questionId);
   if (!question) return answerValue;
 
-  if (questionId === "Q15" && answerValue.startsWith("other:")) {
-    const otherText = answerValue.replace("other:", "").trim();
+  if (questionId === "Q15" && (answerValue.startsWith("SRC_OTHER:") || answerValue.startsWith("other:"))) {
+    const otherText = answerValue.replace("SRC_OTHER:", "").replace("other:", "").trim();
     return `Other: ${otherText || "(not specified)"}`;
   }
 
@@ -149,7 +149,12 @@ export const CompletionPDFDocument = ({
   const getAnswerLabelForNarrative = (questionId: string) => {
     const answer = answers[questionId];
     if (!answer) return "Not specified";
-    return getAnswerLabel(questionId, answer, QUESTIONS);
+    if (Array.isArray(answer)) {
+      return answer
+        .map((a) => getAnswerLabel(questionId, a, QUESTIONS))
+        .join(", ");
+    }
+    return getAnswerLabel(questionId, answer as string, QUESTIONS);
   };
 
   const getPersonaDescription = (persona: string) => {
@@ -222,39 +227,6 @@ export const CompletionPDFDocument = ({
       parts.push(`Growth: ${analysis.portfolio.growth}%`);
     }
     return parts.length > 0 ? parts.join(", ") : "Not available";
-  };
-
-  const getRecommendedProductSet = () => {
-    if (!analysis?.portfolio) return "To be determined by your advisor";
-    
-    const products: string[] = [];
-    
-    if (analysis.portfolio.cash !== undefined && analysis.portfolio.cash > 20) {
-      products.push("MyBanc", "Thrift Invest");
-    }
-    if (analysis.portfolio.income !== undefined && analysis.portfolio.income > 20) {
-      products.push("MyQuest", "Income Fund");
-    }
-    if (analysis.portfolio.growth !== undefined && analysis.portfolio.growth > 20) {
-      products.push("Invest Mix");
-    }
-    
-    if (analysis.netWorthBand.includes("Private Wealth")) {
-      products.push("Everyday Family Office™");
-    }
-    
-    const riskLower = analysis.riskProfile.toLowerCase();
-    if (riskLower.includes("growth") || riskLower.includes("aggressive")) {
-      products.push("EuroInvest", "Dollar Shield");
-    }
-    
-    if (products.length === 0) {
-      products.push("MyBanc", "MyQuest");
-    }
-    
-    return products.length > 0 
-      ? products.filter((v, i, a) => a.indexOf(v) === i).join(", ")
-      : "To be determined by your advisor";
   };
 
   const getPersonaNarrative = (persona: string) => {
@@ -412,7 +384,36 @@ export const CompletionPDFDocument = ({
               5. What We Recommend for You — The Myrtle Pathway
             </Text>
             <Text style={styles.bulletItem}>
-              Recommended Product Set: {getRecommendedProductSet()}
+              Using your Persona + Risk Profile + Net Worth, your recommended
+              investment path includes:
+            </Text>
+            <Text style={styles.bulletItem}>
+              {"\n"}COLLECTIVE INVESTMENT SCHEMES:
+            </Text>
+            <Text style={styles.bulletItem}>
+              • Myrtle Balanced Plus Fund - Steady, long-term growth (Min: ₦50,000)
+            </Text>
+            <Text style={styles.bulletItem}>
+              • Myrtle Dollar Shield Fund - USD returns & Naira protection (Min: $1,000)
+            </Text>
+            <Text style={styles.bulletItem}>
+              • Myrtle Nest (MyNest Money Market Fund) - High liquidity (Min: ₦5,000)
+            </Text>
+            <Text style={styles.bulletItem}>
+              {"\n"}DISCRETIONARY PORTFOLIO MANAGEMENT:
+            </Text>
+            <Text style={styles.bulletItem}>
+              • Myrtle Fixed Income Plus - Capital preservation & income (Min: ₦1,000,000)
+            </Text>
+            <Text style={styles.bulletItem}>
+              • Myrtle WealthBlend - Income generation & capital growth (Min: ₦1,000,000)
+            </Text>
+            <Text style={styles.bulletItem}>
+              • Myrtle Treasury Notes - Steady income generation (Min: ₦500,000)
+            </Text>
+            <Text style={{ fontSize: 8, marginTop: 8, color: "#666666" }}>
+              *Please read the Prospectus and consult professional advisers before subscribing.
+              Contact: wecare@myrtleng.com | +2349169826644
             </Text>
           </View>
 

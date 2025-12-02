@@ -13,7 +13,7 @@ export interface UserInfo {
 }
 
 export interface QuestionnaireAnswers {
-  [key: string]: string;
+  [key: string]: string | string[];
 }
 
 // Export as type for better compatibility
@@ -26,7 +26,7 @@ interface QuestionnaireContextType {
   userInfo: UserInfo | null;
   answers: QuestionnaireAnswers;
   setUserInfo: (info: UserInfo) => void;
-  setAnswer: (questionId: string, answer: string) => void;
+  setAnswer: (questionId: string, answer: string | string[]) => void;
   reset: () => void;
 }
 
@@ -42,7 +42,7 @@ export const QuestionnaireProvider = ({
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [answers, setAnswers] = useState<QuestionnaireAnswers>({});
 
-  const setAnswer = (questionId: string, answer: string) => {
+  const setAnswer = (questionId: string, answer: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
   };
 

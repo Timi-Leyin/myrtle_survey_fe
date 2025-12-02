@@ -228,9 +228,9 @@ export const Completion = ({
     const question = QUESTIONS.find((q) => q.id === questionId);
     if (!question) return answerValue;
 
-    // Handle Q15 "other" option with free text
-    if (questionId === "Q15" && answerValue.startsWith("other:")) {
-      const otherText = answerValue.replace("other:", "").trim();
+    // Handle Q15 "Other" with free text (SRC_OTHER)
+    if (questionId === "Q15" && (answerValue.startsWith("SRC_OTHER:") || answerValue.startsWith("other:"))) {
+      const otherText = answerValue.replace("SRC_OTHER:", "").replace("other:", "").trim();
       return `Other: ${otherText || "(not specified)"}`;
     }
 
@@ -266,116 +266,18 @@ export const Completion = ({
     return band;
   };
 
-  const getNetWorthBandDescription = (band: string) => {
-    if (band.includes("Emerging")) {
-      return "You are in the early asset-building stage.";
-    }
-    if (band.includes("Mass Affluent")) {
-      return "You have a growing financial base and expanding opportunities.";
-    }
-    if (band.includes("Affluent")) {
-      return "You have established assets and require structured growth and protection.";
-    }
-    if (band.includes("Private Wealth")) {
-      return "You are at wealth-preservation, governance, and succession planning levels.";
-    }
-    return "";
-  };
-
-  const getRiskProfileDescription = (profile: string) => {
-    const profileLower = profile.toLowerCase();
-    if (profileLower.includes("conservative")) {
-      return "You value capital protection and stability above growth.";
-    }
-    if (profileLower.includes("moderate")) {
-      return "You balance safety with steady returns.";
-    }
-    if (profileLower.includes("growth")) {
-      return "You are comfortable with calculated swings for higher long-term gains.";
-    }
-    if (profileLower.includes("aggressive")) {
-      return "You seek strong long-term growth and are comfortable with volatility.";
-    }
-    return "";
-  };
-
-  const getPortfolioAllocation = () => {
-    if (!analysis?.portfolio) return "Not available";
-    if (analysis.portfolio.custom) {
-      return "Custom allocation based on your unique profile";
-    }
-    const parts: string[] = [];
-    if (analysis.portfolio.cash !== undefined) {
-      parts.push(`Cash: ${analysis.portfolio.cash}%`);
-    }
-    if (analysis.portfolio.income !== undefined) {
-      parts.push(`Income: ${analysis.portfolio.income}%`);
-    }
-    if (analysis.portfolio.growth !== undefined) {
-      parts.push(`Growth: ${analysis.portfolio.growth}%`);
-    }
-    return parts.length > 0 ? parts.join(", ") : "Not available";
-  };
-
-  const getRecommendedProductSet = () => {
-    if (!analysis?.portfolio) return "To be determined by your advisor";
-    
-    const products: string[] = [];
-    
-    // Based on portfolio allocation
-    if (analysis.portfolio.cash !== undefined && analysis.portfolio.cash > 20) {
-      products.push("MyBanc", "Thrift Invest");
-    }
-    if (analysis.portfolio.income !== undefined && analysis.portfolio.income > 20) {
-      products.push("MyQuest", "Income Fund");
-    }
-    if (analysis.portfolio.growth !== undefined && analysis.portfolio.growth > 20) {
-      products.push("Invest Mix");
-    }
-    
-    // Based on net worth band
-    if (analysis.netWorthBand.includes("Private Wealth")) {
-      products.push("Everyday Family Office™");
-    }
-    
-    // Based on risk profile
-    const riskLower = analysis.riskProfile.toLowerCase();
-    if (riskLower.includes("growth") || riskLower.includes("aggressive")) {
-      products.push("EuroInvest", "Dollar Shield");
-    }
-    
-    // Always include some basics
-    if (products.length === 0) {
-      products.push("MyBanc", "MyQuest");
-    }
-    
-    return products.length > 0 
-      ? products.filter((v, i, a) => a.indexOf(v) === i).join(", ")
-      : "To be determined by your advisor";
-  };
-
   // Helper functions for narrative template
   const getAnswerLabelForNarrative = (questionId: string) => {
     const answer = answers[questionId];
     if (!answer) return "Not specified";
+    if (Array.isArray(answer)) {
+      return answer.map((a) => getAnswerLabel(questionId, a)).join(", ");
+    }
     return getAnswerLabel(questionId, answer);
   };
 
-  const getPersonaNarrative = (persona: string) => {
-    if (persona.includes("Everyday Builder")) {
-      return "building a strong financial foundation with disciplined habits and clear growth plans.";
-    }
-    if (persona.includes("Strategic Achiever")) {
-      return "strategically expanding your wealth with intentional planning and long-term structures.";
-    }
-    if (persona.includes("Private Wealth")) {
-      return "managing significant assets with focus on preservation, legacy, and intergenerational continuity.";
-    }
-    return "on a path to building confident, structured, long-term financial success.";
-  };
-
   return (
-    <div className="space-y-8 px-4">
+    <div className="space-y-8 px-4 max-w-7xl mx-auto">
       {/* Thank You Message */}
       <div className="text-center space-y-4">
         <div className="w-20 h-20 bg-[#27DC85] rounded-full flex items-center justify-center mx-auto shadow-lg">
@@ -440,7 +342,7 @@ export const Completion = ({
       </div>
 
       {analysis && (
-        <section className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-white rounded-2xl shadow-xl p-6 sm:p-8 space-y-8">
+        <section className="bg-linear-to-br from-slate-900 via-slate-900 to-slate-800 text-white rounded-2xl shadow-xl p-6 sm:p-8 space-y-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div>
               <p className="text-sm uppercase tracking-[0.3em] text-emerald-300">
@@ -455,20 +357,6 @@ export const Completion = ({
                 ambitions.
               </p>
             </div>
-            {submissionMeta && (
-              <div className="bg-white/10 border border-white/10 rounded-xl px-5 py-4 space-y-2 w-full lg:w-80">
-                <p className="text-sm text-slate-300">Reference ID</p>
-                <p className="text-base font-semibold tracking-wide">
-                  {submissionMeta.id}
-                </p>
-                <p className="text-sm text-slate-300">
-                  Submitted on{" "}
-                  <span className="text-white font-medium">
-                    {new Date(submissionMeta.createdAt).toLocaleString()}
-                  </span>
-                </p>
-              </div>
-            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -664,7 +552,10 @@ export const Completion = ({
               category:
             </p>
             <ul className="list-disc list-inside space-y-2 text-base text-slate-700 ml-4">
-              <li>{getNetWorthBandDescription(analysis.netWorthBand)}</li>
+              <li><strong>Emerging:</strong> You are in the early asset-building stage.</li>
+              <li><strong>Mass Affluent:</strong> You have a growing financial base and expanding opportunities.</li>
+              <li><strong>Affluent:</strong> You have established assets and require structured growth and protection.</li>
+              <li><strong>Private Wealth:</strong> You are at wealth-preservation, governance, and succession planning levels.</li>
             </ul>
             <p className="text-base text-slate-700 leading-relaxed mt-4">
               This helps us determine the level of sophistication, diversification,
@@ -689,7 +580,10 @@ export const Completion = ({
               What this means:
             </p>
             <ul className="list-disc list-inside space-y-2 text-base text-slate-700 ml-4">
-              <li>{getRiskProfileDescription(analysis.riskProfile)}</li>
+              <li><strong>Conservative:</strong> You value capital protection and stability above growth.</li>
+              <li><strong>Moderate:</strong> You balance safety with steady returns.</li>
+              <li><strong>Growth:</strong> You are comfortable with calculated swings for higher long-term gains.</li>
+              <li><strong>Aggressive:</strong> You seek strong long-term growth and are comfortable with volatility.</li>
             </ul>
             <p className="text-base text-slate-700 leading-relaxed mt-4">
               Your Risk Score was{" "}
@@ -713,7 +607,7 @@ export const Completion = ({
             </p>
             <ul className="list-disc list-inside space-y-2 text-base text-slate-700 ml-4">
               <li>
-                <strong>Primary Goal Selected:</strong>{" "}
+                <strong>Primary Goals Selected:</strong>{" "}
                 {getAnswerLabelForNarrative("Q8")}
               </li>
               <li>
@@ -730,14 +624,9 @@ export const Completion = ({
               </li>
             </ul>
             <p className="text-base text-slate-700 leading-relaxed mt-4">
-              This shows us:
+              <strong>Sources of Funds:</strong>{" "}
+              {getAnswerLabelForNarrative("Q15")}
             </p>
-            <ul className="list-disc list-inside space-y-2 text-base text-slate-700 ml-4">
-              <li>How disciplined you are</li>
-              <li>How patient your money can be</li>
-              <li>How long your funds can stay invested</li>
-              <li>The best possible strategy to help you win</li>
-            </ul>
           </section>
 
           {/* Section 5: Recommendations */}
@@ -747,102 +636,60 @@ export const Completion = ({
             </h3>
             <p className="text-base text-slate-700 leading-relaxed">
               Using your Persona + Risk Profile + Net Worth, your recommended
-              investment path is:
+              investment path includes:
             </p>
-            <div className="bg-gradient-to-r from-[#27DC85] to-[#10b981] text-white rounded-xl p-6 my-4">
-              <p className="text-sm font-semibold uppercase tracking-wide mb-2">
-                Recommended Product Set
-              </p>
-              <p className="text-xl font-bold">{getRecommendedProductSet()}</p>
+            
+            <div className="space-y-3 mt-4">
+              <div className="bg-slate-50 border-l-4 border-[#27DC85] rounded-r-xl p-4">
+                <h4 className="font-semibold text-slate-900 mb-2">Collective Investment Schemes</h4>
+                <ul className="list-disc list-inside space-y-1 text-sm text-slate-700 ml-2">
+                  <li><strong>Myrtle Balanced Plus Fund</strong> — Steady, long-term growth with low to medium risk (Min: ₦50,000)</li>
+                  <li><strong>Myrtle Dollar Shield Fund</strong> — USD returns & protection against Naira volatility (Min: $1,000)</li>
+                  <li><strong>Myrtle Nest (MyNest Money Market Fund)</strong> — Capital preservation with high liquidity (Min: ₦5,000)</li>
+                </ul>
+              </div>
+
+              <div className="bg-slate-50 border-l-4 border-[#27DC85] rounded-r-xl p-4">
+                <h4 className="font-semibold text-slate-900 mb-2">Discretionary Portfolio Management</h4>
+                <ul className="list-disc list-inside space-y-1 text-sm text-slate-700 ml-2">
+                  <li><strong>Myrtle Fixed Income Plus</strong> — Capital preservation & income generation (Min: ₦1,000,000)</li>
+                  <li><strong>Myrtle WealthBlend</strong> — Income generation & capital growth (Min: ₦1,000,000)</li>
+                  <li><strong>Myrtle Treasury Notes</strong> — Capital preservation & steady income (Min: ₦500,000)</li>
+                </ul>
+              </div>
             </div>
-            <p className="text-base text-slate-700 leading-relaxed mt-4">
-              This may include:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-base text-slate-700 ml-4">
-              <li>
-                <strong>Liquidity & Stability:</strong> MyBanc, Thrift Invest
-              </li>
-              <li>
-                <strong>Income & Growth:</strong> MyQuest, Income Fund, Invest
-                Mix
-              </li>
-              <li>
-                <strong>FX & Global Exposure:</strong> EuroInvest, Dollar Shield
-              </li>
-              <li>
-                <strong>Alternative & Legacy Tools:</strong> ESG-Plus, Real
-                Estate Notes, Dignity Portfolios
-              </li>
-              <li>
-                <strong>Private Wealth Solutions:</strong> Everyday Family Office™
-              </li>
-            </ul>
+
             <p className="text-base text-slate-700 leading-relaxed mt-4">
               Each recommendation aligns with your goals, your time horizon, your
               personality, and your financial reality.
             </p>
+            
+            <p className="text-xs text-slate-500 italic mt-4">
+              *Please read the Prospectus and where in doubt, consult your stockbroker, 
+              fund/portfolio manager, accountant, banker, solicitor or any other professional 
+              adviser for guidance before subscribing. Contact: wecare@myrtleng.com | +2349169826644
+            </p>
           </section>
 
-          {/* Section 6: Portfolio Blueprint */}
-          <section className="space-y-4">
-            <h3 className="text-xl font-bold text-slate-900">
-              6. Sample Portfolio Blueprint — Your Ideal Starting Mix
-            </h3>
-            <p className="text-base text-slate-700 leading-relaxed">
-              Here is your Model Portfolio Allocation, crafted from global
-              standards and Myrtle's investment framework:
-            </p>
-            <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6 my-4">
-              <p className="text-lg font-semibold text-slate-900 mb-3">
-                {getPortfolioAllocation()}
+          {/* Section 6: Your Message to Your Advisor */}
+          {answers.Q16 && (
+            <section className="space-y-4">
+              <h3 className="text-xl font-bold text-slate-900">
+                6. Your Message to Your Advisor
+              </h3>
+              <div className="bg-slate-50 border-l-4 border-[#27DC85] rounded-r-xl p-6 my-4">
+                <p className="text-base text-slate-700 italic">
+                  "{answers.Q16}"
+                </p>
+              </div>
+              <p className="text-base text-slate-700 leading-relaxed">
+                We hear you, and we'll take this into account as we craft your personalized wealth plan.
               </p>
-            </div>
-            <p className="text-base text-slate-700 leading-relaxed">
-              This gives you:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-base text-slate-700 ml-4">
-              <li>Stability</li>
-              <li>Predictability</li>
-              <li>Sustainable growth</li>
-              <li>Long-term wealth preservation</li>
-              <li>Exposure that matches your goal and risk profile</li>
-            </ul>
-            <p className="text-base text-slate-700 leading-relaxed mt-4">
-              Your advisor will fine-tune the final percentages based on your cash
-              flow, timelines, and upcoming financial events.
-            </p>
-          </section>
+            </section>
+          )}
 
-          {/* Section 7: Wealth Story */}
-          <section className="space-y-4">
-            <h3 className="text-xl font-bold text-slate-900">
-              7. Your Wealth Story Going Forward
-            </h3>
-            <p className="text-base text-slate-700 leading-relaxed">
-              Across all categories — income, net worth, behaviour, goals, and
-              values — your blueprint shows that you are:
-            </p>
-            <div className="bg-[#27DC85]/10 border-l-4 border-[#27DC85] rounded-r-xl p-6 my-4">
-              <p className="text-lg font-semibold text-slate-900 italic">
-                {getPersonaNarrative(analysis.persona)}
-              </p>
-            </div>
-            <p className="text-base text-slate-700 leading-relaxed">
-              Your next step is simple:
-            </p>
-            <p className="text-base text-slate-700 leading-relaxed font-medium">
-              We help you structure your money to support the life you're building
-              — one that is confident, intentional, and aligned with your
-              long-term aspirations.
-            </p>
-            <p className="text-base text-slate-700 leading-relaxed mt-4">
-              At Myrtle, our promise is to walk with you — with clarity, structure,
-              dignity, and care.
-            </p>
-          </section>
-
-          {/* Section 8: Next Steps */}
-          <section className="space-y-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-6 border-2 border-slate-200">
+          {/* Section 7: Next Steps */}
+          <section className="space-y-4 bg-linear-to-br from-slate-50 to-slate-100 rounded-xl p-6 border-2 border-slate-200">
             <h3 className="text-xl font-bold text-slate-900">
               🌿 Your Myrtle Advisor Will Now…
             </h3>

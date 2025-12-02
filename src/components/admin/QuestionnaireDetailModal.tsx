@@ -28,6 +28,11 @@ export const QuestionnaireDetailModal = ({
     const question = QUESTIONS.find((q) => q.id === questionId);
     if (!question) return answerValue;
 
+    if (questionId === "Q15" && (answerValue.startsWith("SRC_OTHER:") || answerValue.startsWith("other:"))) {
+      const otherText = answerValue.replace("SRC_OTHER:", "").replace("other:", "").trim();
+      return `Other: ${otherText || "(not specified)"}`;
+    }
+
     const option = question.options.find((opt) => opt.value === answerValue);
     return option?.label || answerValue;
   };
@@ -78,7 +83,7 @@ export const QuestionnaireDetailModal = ({
                   <p className="text-sm font-medium text-slate-500 mb-1">
                     Email
                   </p>
-                  <p className="text-base break-words text-slate-900">
+                  <p className="text-base wrap-break-word text-slate-900">
                     {submission.email}
                   </p>
                 </div>
@@ -288,7 +293,7 @@ export const QuestionnaireDetailModal = ({
                         </div>
                         <div className="space-y-3 pl-4">
                           {sectionQuestions.map((question) => {
-                            const answer = submission.answers?.[question.id];
+                            const answer = submission.answers?.[question.id] as unknown as string | string[] | undefined;
                             if (!answer) return null;
 
                             return (
@@ -297,7 +302,7 @@ export const QuestionnaireDetailModal = ({
                                 className="border-l-2 border-slate-200 pl-4 pb-3"
                               >
                                 <div className="flex items-start gap-3">
-                                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#27DC85]/10 flex items-center justify-center">
+                                  <div className="shrink-0 w-8 h-8 rounded-full bg-[#27DC85]/10 flex items-center justify-center">
                                     <span className="text-xs font-semibold text-[#27DC85]">
                                       {question.id}
                                     </span>
@@ -307,14 +312,16 @@ export const QuestionnaireDetailModal = ({
                                       {question.dimension}
                                     </p>
                                     <p className="text-sm text-slate-700">
-                                      {getAnswerLabel(question.id, answer)}
+                                      {Array.isArray(answer)
+                                        ? answer.map((a) => getAnswerLabel(question.id, a)).join(", ")
+                                        : getAnswerLabel(question.id, answer)}
                                     </p>
                                   </div>
                                   <Badge
                                     variant="outline"
-                                    className="flex-shrink-0"
+                                    className="shrink-0"
                                   >
-                                    {answer}
+                                    {Array.isArray(answer) ? answer.join(", ") : answer}
                                   </Badge>
                                 </div>
                               </div>

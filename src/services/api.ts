@@ -52,50 +52,44 @@ export interface ApiResponse<T = any> {
   statusCode?: number;
 }
 
-/**
- * Map Q15 answers to A, B, C, D format as required by the backend
- * Backend only accepts A, B, C, or D (4 options)
- */
-const mapQ15Answer = (answer: string): string => {
-  // Handle "other: text" format - map to D
-  if (answer.startsWith("other:")) {
-    return "D";
-  }
-
-  // Map Q15 values to A, B, C, D
-  // Backend expects only A, B, C, D (4 options)
-  const q15Mapping: Record<string, string> = {
-    salary: "A",
-    business: "B",
-    investments: "C",
-    rental: "D",
-    other: "D", // Map "other" to D since backend only accepts A-D
-  };
-
-  const mapped = q15Mapping[answer.toLowerCase()];
-  if (!mapped) {
-    // Fallback: if answer is already A, B, C, or D, return as-is
-    if (["A", "B", "C", "D"].includes(answer.toUpperCase())) {
-      return answer.toUpperCase();
-    }
-    // Default to D if unknown
-    return "D";
-  }
-
-  return mapped;
-};
-
-/**
- * Normalize questionnaire answers to ensure Q15 is in the correct format
- */
+// Normalize answers to match backend expectations:
+// - Keep arrays as arrays (Q2, Q8, Q15 may be arrays)
+// - For Q15, convert any "SRC_OTHER: text" to "SRC_OTHER" and derive Q16 if missing
 const normalizeAnswers = (
   answers: QuestionnaireAnswers
 ): QuestionnaireAnswers => {
-  const normalized = { ...answers };
+  const normalized: QuestionnaireAnswers = {};
+  let derivedQ16: string | undefined;
 
-  // Map Q15 to A, B, C, D, E format
-  if (normalized.Q15) {
-    normalized.Q15 = mapQ15Answer(normalized.Q15);
+  Object.entries(answers).forEach(([qid, value]) => {
+    if (Array.isArray(value)) {
+      if (qid === "Q15") {
+        const cleaned = value.map((v) => {
+          if (typeof v === "string" && v.startsWith("SRC_OTHER:")) {
+            const text = v.replace("SRC_OTHER:", "").trim();
+            if (text) derivedQ16 = text;
+            return "SRC_OTHER";
+          }
+          return v;
+        });
+        normalized[qid] = cleaned;
+      } else {
+        normalized[qid] = value;
+      }
+    } else if (typeof value === "string") {
+      if (qid === "Q15" && value.startsWith("SRC_OTHER:")) {
+        const text = value.replace("SRC_OTHER:", "").trim();
+        if (text) derivedQ16 = text;
+        normalized[qid] = "SRC_OTHER";
+      } else {
+        normalized[qid] = value;
+      }
+    }
+  });
+
+  // If Q16 is not set but we derived from Q15 other text, set it
+  if (!normalized["Q16"] && derivedQ16) {
+    normalized["Q16"] = derivedQ16;
   }
 
   return normalized;
