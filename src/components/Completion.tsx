@@ -247,13 +247,13 @@ export const Completion = ({
 
   const getPersonaDescription = (persona: string) => {
     if (persona.includes("Everyday Builder")) {
-      return "You are in your foundational building phase — strengthening your income base, forming strong money habits, and preparing for bigger financial moves.";
+      return "You are establishing your financial foundation — building stability, developing strong money habits, and creating the structures that support long-term confidence.";
     }
     if (persona.includes("Strategic Achiever")) {
-      return "You are in your growth decade — expanding income streams, planning the future with intention, and building wealth structures that must work long-term.";
+      return "You are actively expanding your wealth through diversified investments, income growth strategies, and forward-looking financial planning.";
     }
     if (persona.includes("Private Wealth")) {
-      return "You manage significant assets and decisions. Your focus is on preservation, legacy, governance, tax efficiency, and intergenerational continuity.";
+      return "You oversee significant assets and decisions. Your priority is wealth preservation, strategic growth, governance, and multi-generational continuity.";
     }
     return "Your financial identity is defined by your unique goals and behaviors.";
   };
@@ -264,6 +264,39 @@ export const Completion = ({
     if (band.includes("Affluent")) return "Affluent";
     if (band.includes("Private Wealth")) return "Private Wealth";
     return band;
+  };
+
+  const getNetWorthBandDescription = (band: string) => {
+    if (band.includes("Emerging") || band.includes("NW1")) {
+      return "You are in the early wealth-building phase. Your current structure focuses on stability and growth foundations.";
+    }
+    if (band.includes("Mass Affluent") || band.includes("NW2")) {
+      return "You have a growing financial base and expanding opportunities. With structure, your net worth can scale rapidly.";
+    }
+    if (band.includes("Affluent") || band.includes("NW3")) {
+      return "You have established assets and are now in a stage that requires thoughtful diversification, risk-managed growth, and early legacy planning.";
+    }
+    if (band.includes("Private Wealth") || band.includes("NW4")) {
+      return "You are operating at a governance and preservation level. Your plan prioritizes multi-asset strategy, global diversification, security, and intergenerational wealth.";
+    }
+    return "";
+  };
+
+  const getRiskProfileDescription = (profile: string) => {
+    const profileLower = profile.toLowerCase();
+    if (profileLower.includes("conservative")) {
+      return "You prefer stability and protection above aggressive growth. Your strategy prioritizes security and predictable returns.";
+    }
+    if (profileLower.includes("moderate")) {
+      return "You value balance — steady returns with measured exposure to growth opportunities.";
+    }
+    if (profileLower.includes("growth")) {
+      return "You are comfortable with calculated swings because you have a long-term mindset and seek meaningful expansion.";
+    }
+    if (profileLower.includes("aggressive")) {
+      return "You think in decades, not days. You embrace volatility in pursuit of strong long-term returns.";
+    }
+    return "";
   };
 
   // Helper functions for narrative template
@@ -501,14 +534,15 @@ export const Completion = ({
               segment.
             </p>
             <p className="text-base text-slate-700 leading-relaxed">
-              What this means in simple language:
+              <strong>What this means in simple language:</strong>
             </p>
-            <ul className="list-disc list-inside space-y-2 text-base text-slate-700 ml-4">
-              <li>{getPersonaDescription(analysis.persona)}</li>
-            </ul>
-            <p className="text-base text-slate-700 leading-relaxed mt-4">
-              This gives us clarity on how best to serve you and which financial
-              solutions will create the most meaningful impact.
+            <div className="bg-slate-50 border-l-4 border-[#27DC85] rounded-r-xl p-4 my-4">
+              <p className="text-base text-slate-700 italic">
+                {getPersonaDescription(analysis.persona)}
+              </p>
+            </div>
+            <p className="text-base text-slate-700 leading-relaxed">
+              <em>This section helps us understand where you are on your financial journey so we can recommend solutions that match your lifestyle, goals, capacity, and long-term aspirations.</em>
             </p>
           </section>
 
@@ -520,46 +554,46 @@ export const Completion = ({
             <p className="text-base text-slate-700 leading-relaxed">
               From your responses:
             </p>
-            <ul className="list-disc list-inside space-y-2 text-base text-slate-700 ml-4">
-              <li>
-                <strong>Cash & Investments:</strong>{" "}
-                {getAnswerLabelForNarrative("Q4")}
-              </li>
-              <li>
-                <strong>Real Estate:</strong> {getAnswerLabelForNarrative("Q5")}
-              </li>
-              <li>
-                <strong>Business/Income Assets:</strong>{" "}
-                {getAnswerLabelForNarrative("Q6")}
-              </li>
-              <li>
-                <strong>Debts:</strong> {getAnswerLabelForNarrative("Q7")}
-              </li>
-            </ul>
-            <p className="text-base text-slate-700 leading-relaxed mt-4">
-              After consolidating everything, your Estimated Net Worth is:
+            <div className="bg-slate-50 rounded-xl p-4 my-4">
+              <ul className="space-y-2 text-base text-slate-700">
+                <li>
+                  <strong>Cash & Investments:</strong>{" "}
+                  {getAnswerLabelForNarrative("Q4")}
+                </li>
+                <li>
+                  <strong>Real Estate:</strong> {getAnswerLabelForNarrative("Q5")}
+                </li>
+                <li>
+                  <strong>Business/Income Assets:</strong>{" "}
+                  {getAnswerLabelForNarrative("Q6")}
+                </li>
+                <li>
+                  <strong>Debts:</strong> {getAnswerLabelForNarrative("Q7")}
+                </li>
+              </ul>
+            </div>
+            <p className="text-base text-slate-700 leading-relaxed">
+              <strong>After consolidating everything, your Estimated Net Worth is:</strong>
             </p>
-            <div className="bg-[#27DC85]/10 border-2 border-[#27DC85] rounded-xl p-4 my-4">
-              <p className="text-2xl font-bold text-[#27DC85]">
+            <div className="bg-[#27DC85]/10 border-2 border-[#27DC85] rounded-xl p-4 my-4 text-center">
+              <p className="text-3xl font-bold text-[#27DC85]">
                 {formatCurrency(analysis.netWorth)}
               </p>
             </div>
             <p className="text-base text-slate-700 leading-relaxed">
               This places you in the{" "}
-              <span className="font-semibold">
+              <span className="font-semibold text-[#27DC85]">
                 {getNetWorthBandLabel(analysis.netWorthBand)}
               </span>{" "}
-              category:
+              category.
             </p>
-            <ul className="list-disc list-inside space-y-2 text-base text-slate-700 ml-4">
-              <li><strong>Emerging:</strong> You are in the early asset-building stage.</li>
-              <li><strong>Mass Affluent:</strong> You have a growing financial base and expanding opportunities.</li>
-              <li><strong>Affluent:</strong> You have established assets and require structured growth and protection.</li>
-              <li><strong>Private Wealth:</strong> You are at wealth-preservation, governance, and succession planning levels.</li>
-            </ul>
-            <p className="text-base text-slate-700 leading-relaxed mt-4">
-              This helps us determine the level of sophistication, diversification,
-              and long-term structuring your plan deserves.
+            <div className="bg-slate-50 border-l-4 border-[#27DC85] rounded-r-xl p-4 my-4">
+              <p className="text-base text-slate-700 italic">
+                {getNetWorthBandDescription(analysis.netWorthBand)}
+              </p>
+            </div>
+            <p className="text-base text-slate-700 leading-relaxed">
+              <em>Net worth assessment helps us understand your financial capacity, your liquidity needs, and the type of structures best suited for your long-term prosperity.</em>
             </p>
           </section>
 
@@ -569,31 +603,23 @@ export const Completion = ({
               3. Your Investment Personality — Your Comfort With Risk
             </h3>
             <p className="text-base text-slate-700 leading-relaxed">
-              Your answers show that your Risk Profile is:
+              Your answers show that your <strong>Risk Profile is:</strong>
             </p>
-            <div className="bg-slate-100 border-2 border-slate-300 rounded-xl p-4 my-4">
+            <div className="bg-slate-50 border-2 border-slate-300 rounded-xl p-6 my-4 text-center">
               <p className="text-2xl font-bold text-slate-900">
                 {analysis.riskProfile}
               </p>
+              <p className="text-base text-slate-600 mt-2">
+                Risk Score: <span className="font-semibold">{analysis.riskScore}/28</span>
+              </p>
+            </div>
+            <div className="bg-slate-50 border-l-4 border-[#27DC85] rounded-r-xl p-4 my-4">
+              <p className="text-base text-slate-700 italic">
+                {getRiskProfileDescription(analysis.riskProfile)}
+              </p>
             </div>
             <p className="text-base text-slate-700 leading-relaxed">
-              What this means:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-base text-slate-700 ml-4">
-              <li><strong>Conservative:</strong> You value capital protection and stability above growth.</li>
-              <li><strong>Moderate:</strong> You balance safety with steady returns.</li>
-              <li><strong>Growth:</strong> You are comfortable with calculated swings for higher long-term gains.</li>
-              <li><strong>Aggressive:</strong> You seek strong long-term growth and are comfortable with volatility.</li>
-            </ul>
-            <p className="text-base text-slate-700 leading-relaxed mt-4">
-              Your Risk Score was{" "}
-              <span className="font-semibold">{analysis.riskScore}/28</span>,
-              which tells us how you naturally make money decisions — steady,
-              bold, cautious, or growth-minded.
-            </p>
-            <p className="text-base text-slate-700 leading-relaxed">
-              This ensures your investments match your personality, not your
-              pressure.
+              <em>This tells us how you naturally make financial decisions and ensures your portfolio aligns with your temperament, not pressure or uncertainty.</em>
             </p>
           </section>
 
@@ -605,27 +631,28 @@ export const Completion = ({
             <p className="text-base text-slate-700 leading-relaxed">
               From your goal and behaviour assessments:
             </p>
-            <ul className="list-disc list-inside space-y-2 text-base text-slate-700 ml-4">
-              <li>
-                <strong>Primary Goals Selected:</strong>{" "}
-                {getAnswerLabelForNarrative("Q8")}
-              </li>
-              <li>
-                <strong>Your reaction during market dips:</strong>{" "}
-                {getAnswerLabelForNarrative("Q9")}
-              </li>
-              <li>
-                <strong>Comfort with volatility:</strong>{" "}
-                {getAnswerLabelForNarrative("Q10")}
-              </li>
-              <li>
-                <strong>Liquidity need:</strong>{" "}
-                {getAnswerLabelForNarrative("Q14")}
-              </li>
-            </ul>
-            <p className="text-base text-slate-700 leading-relaxed mt-4">
-              <strong>Sources of Funds:</strong>{" "}
-              {getAnswerLabelForNarrative("Q15")}
+            <div className="bg-slate-50 rounded-xl p-4 my-4">
+              <ul className="space-y-3 text-base text-slate-700">
+                <li>
+                  <strong>Primary Goals Selected:</strong>{" "}
+                  {getAnswerLabelForNarrative("Q8")}
+                </li>
+                <li>
+                  <strong>Your reaction during market dips:</strong>{" "}
+                  {getAnswerLabelForNarrative("Q9")}
+                </li>
+                <li>
+                  <strong>Comfort with volatility:</strong>{" "}
+                  {getAnswerLabelForNarrative("Q10")}
+                </li>
+                <li>
+                  <strong>Liquidity need:</strong>{" "}
+                  {getAnswerLabelForNarrative("Q14")}
+                </li>
+              </ul>
+            </div>
+            <p className="text-base text-slate-700 leading-relaxed">
+              <em>These behavioural insights help us design a portfolio you can stay consistent with — not just one that looks good on paper.</em>
             </p>
           </section>
 
@@ -635,8 +662,21 @@ export const Completion = ({
               5. What We Recommend for You — The Myrtle Pathway
             </h3>
             <p className="text-base text-slate-700 leading-relaxed">
-              Using your Persona + Risk Profile + Net Worth, your recommended
-              investment path includes:
+              <strong>Your Classification:</strong>{" "}
+              <span className="text-[#27DC85] font-semibold">
+                {analysis.persona}
+              </span>{" "}
+              •{" "}
+              <span className="text-[#27DC85] font-semibold">
+                {analysis.riskProfile}
+              </span>{" "}
+              •{" "}
+              <span className="text-[#27DC85] font-semibold">
+                {getNetWorthBandLabel(analysis.netWorthBand)}
+              </span>
+            </p>
+            <p className="text-base text-slate-700 leading-relaxed mt-4">
+              Based on your profile, your recommended investment path includes:
             </p>
             
             <div className="space-y-3 mt-4">
@@ -660,8 +700,7 @@ export const Completion = ({
             </div>
 
             <p className="text-base text-slate-700 leading-relaxed mt-4">
-              Each recommendation aligns with your goals, your time horizon, your
-              personality, and your financial reality.
+              <em>These recommendations align your goals, capacity, temperament, and long-term vision into a focused investment pathway.</em>
             </p>
             
             <p className="text-xs text-slate-500 italic mt-4">
@@ -671,11 +710,66 @@ export const Completion = ({
             </p>
           </section>
 
-          {/* Section 6: Your Message to Your Advisor */}
+          {/* Section 6: Sample Portfolio Blueprint */}
+          {analysis.portfolio && (
+            <section className="space-y-4">
+              <h3 className="text-xl font-bold text-slate-900">
+                6. Sample Portfolio Blueprint — Your Ideal Starting Mix
+              </h3>
+              <p className="text-base text-slate-700 leading-relaxed">
+                Based on your risk profile, here is your recommended portfolio allocation:
+              </p>
+              <div className="bg-[#27DC85]/10 border-2 border-[#27DC85] rounded-xl p-6 my-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
+                  {analysis.portfolio.cash !== undefined && (
+                    <div>
+                      <p className="text-3xl font-bold text-[#27DC85]">{analysis.portfolio.cash}%</p>
+                      <p className="text-sm text-slate-600 mt-1">Cash</p>
+                    </div>
+                  )}
+                  {analysis.portfolio.income !== undefined && (
+                    <div>
+                      <p className="text-3xl font-bold text-[#27DC85]">{analysis.portfolio.income}%</p>
+                      <p className="text-sm text-slate-600 mt-1">Income</p>
+                    </div>
+                  )}
+                  {analysis.portfolio.growth !== undefined && (
+                    <div>
+                      <p className="text-3xl font-bold text-[#27DC85]">{analysis.portfolio.growth}%</p>
+                      <p className="text-sm text-slate-600 mt-1">Growth</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <p className="text-base text-slate-700 leading-relaxed">
+                <em>This visual blueprint shows how your wealth is best positioned today, grounded in global standards and Myrtle's disciplined investment philosophy.</em>
+              </p>
+            </section>
+          )}
+
+          {/* Section 7: Sources of Funds */}
+          <section className="space-y-4">
+            <h3 className="text-xl font-bold text-slate-900">
+              7. Sources of Funds
+            </h3>
+            <div className="bg-slate-50 border-l-4 border-[#27DC85] rounded-r-xl p-4 my-4">
+              <p className="text-base text-slate-700">
+                <strong>Your investment funds come from:</strong>
+              </p>
+              <p className="text-base text-slate-700 mt-2">
+                {getAnswerLabelForNarrative("Q15")}
+              </p>
+            </div>
+            <p className="text-base text-slate-700 leading-relaxed">
+              <em>This helps us understand how your wealth is generated and ensures your plan aligns with both regulatory expectations and your financial reality.</em>
+            </p>
+          </section>
+
+          {/* Section 8: Your Message to Your Advisor */}
           {answers.Q16 && (
             <section className="space-y-4">
               <h3 className="text-xl font-bold text-slate-900">
-                6. Your Message to Your Advisor
+                8. Your Message to Your Advisor
               </h3>
               <div className="bg-slate-50 border-l-4 border-[#27DC85] rounded-r-xl p-6 my-4">
                 <p className="text-base text-slate-700 italic">
@@ -683,12 +777,12 @@ export const Completion = ({
                 </p>
               </div>
               <p className="text-base text-slate-700 leading-relaxed">
-                We hear you, and we'll take this into account as we craft your personalized wealth plan.
+                <em>We hear you clearly and will integrate this into your structured wealth plan.</em>
               </p>
             </section>
           )}
 
-          {/* Section 7: Next Steps */}
+          {/* Section 9: Next Steps */}
           <section className="space-y-4 bg-linear-to-br from-slate-50 to-slate-100 rounded-xl p-6 border-2 border-slate-200">
             <h3 className="text-xl font-bold text-slate-900">
               🌿 Your Myrtle Advisor Will Now…
