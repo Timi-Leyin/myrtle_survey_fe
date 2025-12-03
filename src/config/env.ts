@@ -2,8 +2,7 @@ const sanitizeUrl = (url: string) => url.replace(/\/+$/, "");
 
 const rawApiBaseUrl =
   import.meta.env.VITE_API_URL ||
-  "http://localhost:3000";
-  // "https://myrtlesurveybe-production.up.railway.app";
+  "https://myrtlesurveybe-production.up.railway.app";
 
 if (!rawApiBaseUrl) {
   console.warn(
