@@ -1,6 +1,6 @@
 const sanitizeUrl = (url: string) => url.replace(/\/+$/, "");
 
-const rawApiBaseUrl = "myrtlesurveybe-production-5e42.up.railway.app";
+const rawApiBaseUrl = "https://myrtlesurveybe-production-5e42.up.railway.app";
 
 if (!rawApiBaseUrl) {
   console.warn(
