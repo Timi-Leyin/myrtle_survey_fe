@@ -11,6 +11,5 @@ if (!rawApiBaseUrl) {
 
 export const API_BASE_URL = sanitizeUrl(rawApiBaseUrl);
 
-const rawDocsUrl = import.meta.env.VITE_API_DOCS_URL?.trim();
 
-export const API_DOCS_URL = sanitizeUrl(rawDocsUrl || `${API_BASE_URL}/docs`);
+export const API_DOCS_URL = ""
