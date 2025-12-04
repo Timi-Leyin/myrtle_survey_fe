@@ -41,23 +41,29 @@ export function DatePicker({
           variant="outline"
           disabled={disabled}
           className={cn(
-            "w-full justify-start text-left font-normal h-10",
+            "w-full justify-start text-left font-normal h-11 rounded-xl border-slate-300 hover:border-[#27DC85] hover:bg-[#27DC85]/5 transition-all",
             !value && "text-muted-foreground",
             className
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+          <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
           <span className="truncate">
             {value ? format(value, "PPP") : <span>{placeholder}</span>}
           </span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent className="w-auto p-0 rounded-xl shadow-xl" align="start">
         <Calendar
           mode="single"
           selected={value}
           onSelect={(date) => {
-            onChange?.(date)
+            if (date) {
+              // Set to noon UTC to avoid timezone issues
+              const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0))
+              onChange?.(utcDate)
+            } else {
+              onChange?.(undefined)
+            }
             setOpen(false)
           }}
           disabled={(date) => {

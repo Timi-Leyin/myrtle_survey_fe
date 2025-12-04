@@ -41,45 +41,61 @@ export const QuestionForm = ({
   const questionInSection = sectionQuestions.findIndex((q) => q.id === question.id) + 1;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Section Header */}
       {currentSection && (
-        <div className="mb-4 pb-4 border-b border-slate-200">
-          <p className="text-sm font-semibold text-[#27DC85] uppercase tracking-wide mb-1">
-            {currentSection.title}
-          </p>
-          <p className="text-xs text-slate-500">
-            Question {questionInSection} of {sectionQuestions.length} in this section
-          </p>
+        <div className="mb-6 pb-5 border-b-2 border-slate-100">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-full bg-[#27DC85]/10 flex items-center justify-center">
+              <span className="text-[#27DC85] font-bold text-lg">{currentSection.number}</span>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-[#27DC85] uppercase tracking-wide">
+                {currentSection.title}
+              </p>
+              <p className="text-xs text-slate-500">
+                Question {questionInSection} of {sectionQuestions.length}
+              </p>
+            </div>
+          </div>
         </div>
       )}
 
       {/* Progress Bar */}
-      <div>
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-slate-600">
-            Question {currentQuestionIndex + 1} of {totalQuestions}
+      <div className="space-y-3">
+        <div className="flex justify-between items-center">
+          <span className="text-sm font-semibold text-slate-700">
+            Progress
           </span>
-          <span className="text-sm font-medium text-slate-600">
-            {Math.round(progress)}%
+          <span className="text-sm font-bold text-[#27DC85]">
+            {currentQuestionIndex + 1}/{totalQuestions} • {Math.round(progress)}%
           </span>
         </div>
-        <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+        <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner">
           <div
-            className="h-full bg-[#27DC85] transition-all duration-300 ease-out rounded-full"
+            className="h-full bg-linear-to-r from-[#27DC85] to-[#20C978] transition-all duration-500 ease-out rounded-full shadow-sm"
             style={{ width: `${progress}%` }}
           />
         </div>
       </div>
 
       {/* Question */}
-      <div>
-        <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 mb-3">
+      <div className="bg-white rounded-2xl border-2 border-slate-200 p-6 md:p-8 shadow-sm">
+        <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2 leading-tight">
           {question.dimension}
         </h2>
         {!isText && (
           <p className="text-base text-slate-600 mb-6">
-            {isMulti ? "Select all that apply" : "Please select one option"}
+            {isMulti ? (
+              <span className="inline-flex items-center gap-2 bg-[#27DC85]/10 text-[#27DC85] px-3 py-1 rounded-full text-sm font-medium">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Select all that apply
+              </span>
+            ) : (
+              <span className="text-slate-500">Choose one option</span>
+            )}
           </p>
         )}
 
@@ -89,8 +105,8 @@ export const QuestionForm = ({
             <textarea
               value={typeof selectedAnswer === "string" ? selectedAnswer : selectedArray[0] || ""}
               onChange={(e) => onAnswerSelect(e.target.value)}
-              placeholder="Type your response here..."
-              className="w-full min-h-32 px-4 py-3 text-base rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#27DC85] focus:border-transparent transition-all"
+              placeholder="Share your thoughts here... (Optional)"
+              className="w-full min-h-40 px-5 py-4 text-base rounded-xl border-2 border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#27DC85] focus:border-[#27DC85] transition-all resize-none"
             />
           </div>
         ) : (
@@ -126,19 +142,19 @@ export const QuestionForm = ({
                 <button
                   type="button"
                   onClick={onSelect}
-                  className={`w-full text-left p-5 rounded-xl border-2 transition-all duration-200 ${
+                  className={`group w-full text-left px-5 py-4 rounded-xl border-2 transition-all duration-200 ${
                     isSelected
-                      ? "border-[#27DC85] bg-[#27DC85]/10 shadow-md"
-                      : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
+                      ? "border-[#27DC85] bg-[#27DC85]/5 shadow-md ring-2 ring-[#27DC85]/20"
+                      : "border-slate-200 bg-white hover:border-[#27DC85]/50 hover:bg-slate-50 hover:shadow-sm"
                   }`}
                 >
-                  <div className="flex items-center">
+                  <div className="flex items-center gap-4">
                     <div
                       className={`${
                         isMulti
-                          ? "w-5 h-5 mr-4 rounded border-2 flex items-center justify-center shrink-0"
-                          : "w-5 h-5 rounded-full border-2 mr-4 flex items-center justify-center shrink-0"
-                      } ${isSelected ? "border-[#27DC85] bg-[#27DC85]" : "border-slate-300"}`}
+                          ? "w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0"
+                          : "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0"
+                      } transition-all ${isSelected ? "border-[#27DC85] bg-[#27DC85]" : "border-slate-300 group-hover:border-[#27DC85]/50"}`}
                     >
                       {isSelected && (
                         isMulti ? (
@@ -146,13 +162,13 @@ export const QuestionForm = ({
                             <path d="M20 6L9 17l-5-5" />
                           </svg>
                         ) : (
-                          <div className="w-2 h-2 rounded-full bg-white" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-white" />
                         )
                       )}
                     </div>
                     <span
-                      className={`text-base font-medium ${
-                        isSelected ? "text-slate-900" : "text-slate-700"
+                      className={`text-base flex-1 ${
+                        isSelected ? "font-semibold text-slate-900" : "text-slate-700 group-hover:text-slate-900"
                       }`}
                     >
                       {option.label}
@@ -166,7 +182,7 @@ export const QuestionForm = ({
                       value={otherText}
                       onChange={(e) => onOtherTextChange?.(e.target.value)}
                       placeholder="Please specify..."
-                      className="w-full px-4 py-3 text-base rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#27DC85] focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 text-base rounded-xl border-2 border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#27DC85] focus:border-[#27DC85] transition-all"
                     />
                   </div>
                 )}
@@ -178,13 +194,16 @@ export const QuestionForm = ({
       </div>
 
       {/* Navigation */}
-      <div className="flex gap-4 pt-4">
+      <div className="flex gap-4 pt-6">
         {canGoBack && (
           <button
             type="button"
             onClick={onBack}
-            className="flex-1 py-3 px-6 text-base rounded-xl border-2 border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition-all"
+            className="flex items-center justify-center gap-2 flex-1 py-3.5 px-6 text-base rounded-xl border-2 border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 hover:border-slate-400 transition-all"
           >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
             Back
           </button>
         )}
@@ -198,15 +217,18 @@ export const QuestionForm = ({
               ? !(typeof selectedAnswer === "string" ? selectedAnswer.trim() : (selectedArray[0] || "").trim())
               : !selectedArray.length || (isOtherSelected && !otherText.trim())
           }
-          className={`flex-1 py-3 px-6 text-base rounded-xl font-semibold transition-all ${
+          className={`flex items-center justify-center gap-2 flex-1 py-3.5 px-6 text-base rounded-xl font-bold transition-all ${
             (isText
               ? (typeof selectedAnswer === "string" ? selectedAnswer.trim() : (selectedArray[0] || "").trim())
               : selectedArray.length) && (!isOtherSelected || otherText.trim())
-              ? "bg-[#27DC85] text-white shadow-md hover:shadow-lg hover:opacity-90"
+              ? "bg-linear-to-r from-[#27DC85] to-[#20C978] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
               : "bg-slate-200 text-slate-400 cursor-not-allowed"
           }`}
         >
-          {currentQuestionIndex === totalQuestions - 1 ? "Complete" : "Next"}
+          {currentQuestionIndex === totalQuestions - 1 ? "Complete Survey" : "Continue"}
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
         </button>
       </div>
     </div>

@@ -128,19 +128,22 @@ export const UserInfoForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-8">
       {/* Personal Info Section */}
-      <div className="space-y-5">
-        <div className="space-y-2">
-          <h3 className="text-base font-semibold text-slate-900">
-            Personal Information
-          </h3>
-          <Separator className="bg-[#27DC85]/20" />
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <div className="inline-block">
+            <h3 className="text-xl font-bold text-slate-900 mb-1">
+              Personal Information
+            </h3>
+            <div className="h-1 w-16 bg-linear-to-r from-[#27DC85] to-[#20C978] rounded-full"></div>
+          </div>
+          <p className="text-sm text-slate-600">Let's start with some basic details about you</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="space-y-2.5">
-            <Label htmlFor="fullName" className="text-sm">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="fullName" className="text-sm font-medium text-slate-700">
               Full Name <span className="text-[#27DC85]">*</span>
             </Label>
             <div className="relative">
@@ -150,7 +153,7 @@ export const UserInfoForm = ({
                 {...register("fullName")}
                 placeholder="John Doe"
                 className={cn(
-                  "h-10 pr-10",
+                  "h-11 rounded-xl border-slate-300 focus-visible:ring-[#27DC85] focus-visible:border-[#27DC85] pr-10 transition-all",
                   errors.fullName &&
                     "border-red-500 focus-visible:ring-red-500 focus-visible:border-red-500"
                 )}
@@ -166,17 +169,17 @@ export const UserInfoForm = ({
             {errors.fullName && (
               <p
                 id="fullName-error"
-                className="text-sm text-red-600 flex items-start gap-1.5 animate-in fade-in slide-in-from-top-1"
+                className="text-xs text-red-600 flex items-start gap-1.5 animate-in fade-in slide-in-from-top-1"
                 role="alert"
               >
-                <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
                 <span>{errors.fullName.message}</span>
               </p>
             )}
           </div>
 
-          <div className="space-y-2.5">
-            <Label htmlFor="email" className="text-sm">
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-sm font-medium text-slate-700">
               Email <span className="text-[#27DC85]">*</span>
             </Label>
             <div className="relative">
@@ -186,7 +189,7 @@ export const UserInfoForm = ({
                 {...register("email")}
                 placeholder="john@example.com"
                 className={cn(
-                  "h-10 pr-10",
+                  "h-11 rounded-xl border-slate-300 focus-visible:ring-[#27DC85] focus-visible:border-[#27DC85] pr-10 transition-all",
                   errors.email &&
                     "border-red-500 focus-visible:ring-red-500 focus-visible:border-red-500"
                 )}
@@ -203,7 +206,7 @@ export const UserInfoForm = ({
                 className="text-sm text-red-600 flex items-start gap-1.5 animate-in fade-in slide-in-from-top-1"
                 role="alert"
               >
-                <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
                 <span>{errors.email.message}</span>
               </p>
             )}
@@ -239,7 +242,7 @@ export const UserInfoForm = ({
                 className="text-sm text-red-600 flex items-start gap-1.5 animate-in fade-in slide-in-from-top-1"
                 role="alert"
               >
-                <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
                 <span>{errors.phone.message}</span>
               </p>
             )}
@@ -288,7 +291,7 @@ export const UserInfoForm = ({
                 className="text-sm text-red-600 flex items-start gap-1.5 animate-in fade-in slide-in-from-top-1"
                 role="alert"
               >
-                <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
                 <span>{errors.dateOfBirth.message}</span>
               </p>
             )}
@@ -340,7 +343,7 @@ export const UserInfoForm = ({
                 className="text-sm text-red-600 flex items-start gap-1.5 animate-in fade-in slide-in-from-top-1"
                 role="alert"
               >
-                <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
                 <span>{errors.gender.message}</span>
               </p>
             )}
@@ -389,7 +392,7 @@ export const UserInfoForm = ({
                 className="text-sm text-red-600 flex items-start gap-1.5 animate-in fade-in slide-in-from-top-1"
                 role="alert"
               >
-                <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
                 <span>{errors.maritalStatus.message}</span>
               </p>
             )}
@@ -437,7 +440,7 @@ export const UserInfoForm = ({
                 className="text-sm text-red-600 flex items-start gap-1.5 animate-in fade-in slide-in-from-top-1"
                 role="alert"
               >
-                <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
                 <span>{errors.occupation.message}</span>
               </p>
             )}
@@ -473,7 +476,7 @@ export const UserInfoForm = ({
                 className="text-sm text-red-600 flex items-start gap-1.5 animate-in fade-in slide-in-from-top-1"
                 role="alert"
               >
-                <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
                 <span>{errors.nationality.message}</span>
               </p>
             )}
@@ -510,7 +513,7 @@ export const UserInfoForm = ({
               className="text-sm text-red-600 flex items-start gap-1.5 animate-in fade-in slide-in-from-top-1"
               role="alert"
             >
-              <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+              <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
               <span>{errors.stateOfResidence.message}</span>
             </p>
           )}
@@ -518,16 +521,16 @@ export const UserInfoForm = ({
       </div>
 
       {/* Submit Button */}
-      <div className="pt-5">
+      <div className="pt-6">
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-[#27DC85] hover:bg-[#27DC85]/90 text-white h-10 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-linear-to-r from-[#27DC85] to-[#20C978] hover:opacity-90 text-white h-12 text-base font-bold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
         >
           {isSubmitting ? (
-            <span className="flex items-center gap-2">
+            <span className="flex items-center justify-center gap-2">
               <svg
-                className="animate-spin h-4 w-4"
+                className="animate-spin h-5 w-5"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -549,7 +552,12 @@ export const UserInfoForm = ({
               Processing...
             </span>
           ) : (
-            "Continue"
+            <span className="flex items-center justify-center gap-2">
+              Start Survey
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </span>
           )}
         </Button>
       </div>
