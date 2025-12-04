@@ -1,8 +1,6 @@
 const sanitizeUrl = (url: string) => url.replace(/\/+$/, "");
 
-const rawApiBaseUrl =
-  // import.meta.env.VITE_API_URL ||
-  "myrtlesurveybe-production-5e42.up.railway.app";
+const rawApiBaseUrl = "myrtlesurveybe-production-5e42.up.railway.app";
 
 if (!rawApiBaseUrl) {
   console.warn(
