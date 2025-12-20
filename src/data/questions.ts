@@ -6,6 +6,7 @@ export interface Question {
   options: Array<{ value: string; label: string }>;
   multiple?: boolean; // allow multi-select (checkboxes)
   type?: "single" | "multi" | "text";
+  optional?: boolean; // makes question optional, defaults to N/A if not filled
 }
 
 export const SECTIONS = [
@@ -101,10 +102,11 @@ export const QUESTIONS: Question[] = [
     sectionNumber: 2,
     options: [
       { value: "A", label: "None" },
-      { value: "B", label: "Below ₦50m" },
-      { value: "C", label: "₦50m–₦250m" },
-      { value: "D", label: "₦250m–₦1bn" },
-      { value: "E", label: "Above ₦1bn" },
+      { value: "B", label: "Below ₦5m" },
+      { value: "C", label: "Below ₦50m" },
+      { value: "D", label: "₦50m–₦250m" },
+      { value: "E", label: "₦250m–₦1bn" },
+      { value: "F", label: "Above ₦1bn" },
     ],
   },
   {
@@ -114,10 +116,11 @@ export const QUESTIONS: Question[] = [
     sectionNumber: 2,
     options: [
       { value: "A", label: "None" },
-      { value: "B", label: "Below ₦50m" },
-      { value: "C", label: "₦50m–₦250m" },
-      { value: "D", label: "₦250m–₦1bn" },
-      { value: "E", label: "Above ₦1bn" },
+      { value: "B", label: "Below ₦5m" },
+      { value: "C", label: "Below ₦50m" },
+      { value: "D", label: "₦50m–₦250m" },
+      { value: "E", label: "₦250m–₦1bn" },
+      { value: "F", label: "Above ₦1bn" },
     ],
   },
   {
@@ -127,10 +130,11 @@ export const QUESTIONS: Question[] = [
     sectionNumber: 2,
     options: [
       { value: "A", label: "None" },
-      { value: "B", label: "Below ₦25m" },
-      { value: "C", label: "₦25m–₦100m" },
-      { value: "D", label: "₦100m–₦500m" },
-      { value: "E", label: "Above ₦500m" },
+      { value: "B", label: "Below ₦5m" },
+      { value: "C", label: "Below ₦25m" },
+      { value: "D", label: "₦25m–₦100m" },
+      { value: "E", label: "₦100m–₦500m" },
+      { value: "F", label: "Above ₦500m" },
     ],
   },
 
@@ -253,5 +257,6 @@ export const QUESTIONS: Question[] = [
     sectionNumber: 4,
     options: [],
     type: "text",
+    optional: true,
   },
 ];

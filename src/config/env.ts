@@ -1,5 +1,6 @@
 const sanitizeUrl = (url: string) => url.replace(/\/+$/, "");
 
+// const rawApiBaseUrl = "http://localhost:3000";
 const rawApiBaseUrl = "https://myrtlesurveybe-production-5e42.up.railway.app";
 
 if (!rawApiBaseUrl) {

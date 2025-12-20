@@ -25,6 +25,8 @@ export const QuestionForm = ({
   const totalQuestions = QUESTIONS.length;
   const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
   const isQ15 = question.id === "Q15";
+  const isQ16 = question.id === "Q16";
+  const isOptional = question.optional || false;
   const isMulti = !!question.multiple;
   const isText = (question as any).type === "text" || question.options.length === 0;
   const selectedArray = Array.isArray(selectedAnswer)
@@ -81,9 +83,19 @@ export const QuestionForm = ({
 
       {/* Question */}
       <div className="bg-white rounded-2xl border-2 border-slate-200 p-6 md:p-8 shadow-sm">
-        <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2 leading-tight">
-          {question.dimension}
-        </h2>
+        <div className="flex items-start justify-between gap-4 mb-2">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 leading-tight">
+            {question.dimension}
+          </h2>
+          {isOptional && (
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-amber-50 text-amber-700 whitespace-nowrap">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Optional
+            </span>
+          )}
+        </div>
         {!isText && (
           <p className="text-base text-slate-600 mb-6">
             {isMulti ? (
@@ -211,16 +223,18 @@ export const QuestionForm = ({
           type="button"
           onClick={onNext}
           disabled={
-            isMulti
+            isOptional
+              ? false // Optional questions can always proceed
+              : isMulti
               ? selectedArray.length === 0 || (isOtherSelected && !otherText.trim())
               : isText
               ? !(typeof selectedAnswer === "string" ? selectedAnswer.trim() : (selectedArray[0] || "").trim())
               : !selectedArray.length || (isOtherSelected && !otherText.trim())
           }
           className={`flex items-center justify-center gap-2 flex-1 py-3.5 px-6 text-base rounded-xl font-bold transition-all ${
-            (isText
+            (isOptional || (isText
               ? (typeof selectedAnswer === "string" ? selectedAnswer.trim() : (selectedArray[0] || "").trim())
-              : selectedArray.length) && (!isOtherSelected || otherText.trim())
+              : selectedArray.length) && (!isOtherSelected || otherText.trim()))
               ? "bg-linear-to-r from-[#27DC85] to-[#20C978] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
               : "bg-slate-200 text-slate-400 cursor-not-allowed"
           }`}

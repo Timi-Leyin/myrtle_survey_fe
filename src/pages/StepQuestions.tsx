@@ -17,6 +17,7 @@ export const StepQuestions = ({
   const { answers, setAnswer } = useQuestionnaire();
   const question = QUESTIONS[currentQuestionIndex];
   const isMulti = !!question.multiple;
+  const isOptional = question.optional || false;
   const selectedAnswer = answers[question.id];
   const selectedArray = Array.isArray(selectedAnswer)
     ? selectedAnswer
@@ -85,6 +86,13 @@ export const StepQuestions = ({
   };
 
   const handleNext = () => {
+    // For optional questions with no answer, set to "N/A"
+    if (isOptional && !selectedAnswer) {
+      setAnswer(question.id, "N/A");
+      onNext();
+      return;
+    }
+
     if ((isMulti ? selectedArray.length > 0 : !!selectedAnswer) && (!isOtherSelected || otherText.trim())) {
       onNext();
     }
