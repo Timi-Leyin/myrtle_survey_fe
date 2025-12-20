@@ -243,7 +243,7 @@ export const Completion = ({
     return `₦${value.toLocaleString()}`;
   };
 
-  // Helper functions for narrative
+  // Helper functions for narrative -1
 
   const getPersonaDescription = (persona: string) => {
     if (persona.includes("Everyday Builder")) {
