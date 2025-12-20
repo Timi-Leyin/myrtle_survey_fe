@@ -25,7 +25,6 @@ export const QuestionForm = ({
   const totalQuestions = QUESTIONS.length;
   const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
   const isQ15 = question.id === "Q15";
-  const isQ16 = question.id === "Q16";
   const isOptional = question.optional || false;
   const isMulti = !!question.multiple;
   const isText = (question as any).type === "text" || question.options.length === 0;
